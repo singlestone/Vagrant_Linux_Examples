@@ -1,0 +1,33 @@
+eo    1  cd /usr/local/src
+    2  wget https://download.bestpractical.com/pub/rt/release/rt.tar.gz
+    3  tar -zxf rt.tar.gz
+    4  ls
+    5  cd rt-4.2.11
+    6  cd rt-4.2.12
+    7  apt-get install build-essential openssl libyaml-0-2 libyaml-libyaml-perl libyaml-appconfig-perl libexpat1-dev apache2 mysql-server mysql-client exim4-daemon-light eximon4 mailutils libcurl4-openssl-dev
+    8  ./configure
+    9  make testdeps
+   10  /usr/bin/perl -MCPAN -e shell
+   11  make fixdeps
+   12  make testdeps
+   13  make install
+   14  make initialize-database
+   15  apt-get install -y libapache2-mod-fastcgi
+   16  apt-get install libapache2-mod-fastcgi
+   17  nano /etc/apt/sources.list
+   18  apt-get update
+   19  apt-get install libapache2-mod-fastcgi
+   20  a2enmod fastcgi
+   21  service apache2 restart
+   22  nano -w /etc/apache2/sites-available/001-requesttracker.conf
+   23  a2dissite 000-default.conf
+   24  a2ensite 001-requesttracker.conf
+   25  service apache2 restart
+   26  dpkg-reconfigure exim4-config
+   27  nano -w /etc/exim4.conf.localmacros
+   28  service exim4 restart
+   29  nano -w /etc/aliases
+   30  service apache2 restart
+   31  history
+   32  history < /vagrant/history.txt
+   33  history > /vagrant/history.txt

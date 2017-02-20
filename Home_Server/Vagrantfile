@@ -1,0 +1,104 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#Where the second Hard disk is created.
+file_to_disk_srvr1 = './tmp/large_disk_srvr1.vdi'
+file_to_disk_srvr2 = './tmp/large_disk_srvr2.vdi'
+
+Vagrant.configure("2") do |config|
+
+	#### Home Server One ####
+	config.vm.define "testsrv1" do |testsrv1|
+		#Name of the Box being run, should be an Ubuntu flavor.
+		testsrv1.vm.box = "ubuntu/vivid64"	
+	
+		#Name of the Created Server
+		testsrv1.vm.hostname = "testsrv1"
+	
+		#Setting up the networking
+		testsrv1.vm.network "private_network", ip: "192.168.2.005"
+
+		#Setting up server direct connection
+		testsrv1.vm.network "private_network", ip: "192.168.3.110",    virtualbox__intnet: "server2server"
+	
+		#Pointing to the shell script that will configure this image.
+		testsrv1.vm.provision :shell, path: "bootstrap.sh"
+		testsrv1.vm.provision :shell, path: "DNS_setup.sh"
+	
+		#Making any additonal hardware changes.
+		testsrv1.vm.provider "virtualbox" do |vb|
+	
+			## Memory ##
+			
+			#Increases Ram to 2 GB
+			vb.memory = "2048"
+		
+			## Disk Space
+		
+			#Adds a second hard drive, if it current doesn't exist, it's creates it.
+			unless File.exist?(file_to_disk_srvr1)
+				vb.customize ['createhd', '--filename', file_to_disk_srvr1, '--size', 80 * 1024]
+			end
+		
+			#Attaches the second hard drive we just created.
+				vb.customize ['storageattach', :id, '--storagectl', 'SATAController', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_to_disk_srvr1]
+		
+			## Network Cards
+		
+			#Allows the second NIC to run in promiscuous mode.
+			vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+			
+			#Sets all Nic Adapter Types to "PCnet-FAST III"
+			vb.customize ["modifyvm", :id, "--nictype1", "Am79C973"]
+			vb.customize ["modifyvm", :id, "--nictype2", "Am79C973"]
+			vb.customize ["modifyvm", :id, "--nictype3", "Am79C973"]
+		end
+	end
+		
+	#### Home Server Two ####
+	config.vm.define "testsrv2" do |testsrv2|
+		#Name of the Box being run, should be an Ubuntu flavor.
+		testsrv2.vm.box = "ubuntu/vivid64"	
+	
+		#Name of the Created Server
+		testsrv2.vm.hostname = "test-srv-2"
+	
+		#Setting up the networking
+		testsrv2.vm.network "private_network", ip: "192.168.2.006"
+	
+		#Setting up server direct connection
+		testsrv2.vm.network "private_network", ip: "192.168.3.101",    virtualbox__intnet: "server2server"
+	
+		#Pointing to the shell script that will configure this image.
+		testsrv2.vm.provision :shell, path: "bootstrap.sh"
+	
+		#Making any additonal hardware changes.
+		testsrv2.vm.provider "virtualbox" do |vb|
+	
+			## Memory ##
+	
+			#Increases Ram to 2 GB
+			vb.memory = "2048"
+		
+			## Disk Space
+		
+			#Adds a second hard drive, if it current doesn't exist, it's creates it.
+			unless File.exist?(file_to_disk_srvr2)
+				vb.customize ['createhd', '--filename', file_to_disk_srvr2, '--size', 80 * 1024]
+			end
+		
+			#Attaches the second hard drive we just created.
+			vb.customize ['storageattach', :id, '--storagectl', 'SATAController', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_to_disk_srvr2]
+		
+			## Network Cards
+		
+			#Allows the second NIC to run in promiscuous mode.
+			vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+			
+			#Sets all Nic Adapter Types to "PCnet-FAST III"
+			vb.customize ["modifyvm", :id, "--nictype1", "Am79C973"]
+			vb.customize ["modifyvm", :id, "--nictype2", "Am79C973"]
+			vb.customize ["modifyvm", :id, "--nictype3", "Am79C973"]
+		end
+	end
+end

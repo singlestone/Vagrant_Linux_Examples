@@ -1,0 +1,25 @@
+### This is a yaml representation of the profile.
+### Any line starting with a '# will be ignored.
+###
+### A profile consists of a set of configuration items followed by a set of
+### devices.
+###
+### An example would look like:
+### name: onenic
+### config:
+###   raw.lxc: lxc.aa_profile=unconfined
+### devices:
+###   eth0:
+###     nictype: bridged
+###     parent: lxcbr0
+###     type: nic
+###
+### Note that the name is shown but cannot be changed
+
+name: DHCPSRV
+config: {}
+devices:
+  eth0:
+    nictype: bridged
+    parent: br0
+    type: nic

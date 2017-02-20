@@ -1,0 +1,32 @@
+# Template used to create this container: /usr/share/lxc/templates/lxc-ubuntu
+# Parameters passed to the template:
+# For additional config options, please look at lxc.container.conf(5)
+
+# Common configuration
+lxc.include = /usr/share/lxc/config/ubuntu.common.conf
+
+# Container specific configuration
+lxc.rootfs = /var/lib/lxc/PlexSRVR/rootfs
+#lxc.mount = /var/lib/lxc/PlexSRVR/fstab
+lxc.utsname = PlexSRVR
+lxc.arch = amd64
+
+# Network configuration eth0
+lxc.network.type = macvlan
+lxc.network.flags = up
+lxc.network.link = eth1
+lxc.network.name = eth0
+#lxc.network.macvlan.mode = bridge
+
+# Network configuration eth1
+lxc.network.type = veth
+lxc.network.link = lxcbr0
+lxc.network.name = eth1
+lxc.network.flags = up
+lxc.network.hwaddr = 00:16:3e:7f:3b:30
+
+
+# Autostart
+lxc.start.auto = 1
+lxc.start.delay = 5
+lxc.start.order = 100
